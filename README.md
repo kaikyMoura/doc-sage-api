@@ -1,98 +1,192 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+<div align="center">
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 📄 DocSage API
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+**DocSage** is an intelligent backend API for analyzing and extracting structured information from documents (PDFs, images, and plain text), powered by LLMs and strict business validation rules.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+</div>
 
-## Project setup
+<div align="center">
+  
+![GitHub top language](https://img.shields.io/github/languages/top/kaikyMoura/doc-sage-api)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ce1f958181d743b98107dbc70dfac5ed)](https://app.codacy.com/gh/kaikyMoura/doc-sage-api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+![Repository size](https://img.shields.io/github/repo-size/kaikyMoura/doc-sage-api)
+![Github last commit](https://img.shields.io/github/last-commit/kaikyMoura/doc-sage-api)
+![License](https://img.shields.io/aur/license/LICENSE)
+![Languages count](https://img.shields.io/github/languages/count/kaikyMoura/doc-sage-api)
 
-```bash
-$ pnpm install
+</div>
+
+## 1. About the Project
+
+This project serves as the API implementation for DocSage, an intelligent document analysis system designed to streamline workflows in contexts like notary offices, city halls, and public services requiring document validation and processing.
+
+Built with NestJS, Node.js, TypeScript, Tesseract.js, pdf-parse, Prisma, and Groq, the DocSage API enables efficient document processing by leveraging OCR and LLMs to extract and structure data from scanned images and PDF files.
+
+Once text is extracted using Tesseract.js (for images) or pdf-parse (for PDFs), it is further processed and enriched by LLaMA 3 running on the Groq platform to identify and extract key fields (e.g., document type, issue date, names, numbers), providing structured and contextualized data for downstream usage.
+
+---
+
+## 2. Features
+
+- 🔐 User Authentication (JWT-based)
+- 📄 Document Upload (images and PDFs)
+- 🧠 Text Extraction using:
+  - `Tesseract.js` for image-based OCR
+  - `pdf-parse` for PDF document parsing
+
+- 🤖 LLM Integration via `Groq` + `LLaMA 3` to:
+  - Identify relevant information from raw text
+  - Return structured and categorized document data 
+
+- 📂 Document Management (storage, metadata, status) (soon...)
+
+- 🧪 Unit and Integration Testing with `Jest`
+
+- ⚙️ Modular & Scalable Architecture using NestJS best practices
+
+---
+
+## 3. Technologies
+
+<div style="display: inline-block">
+  <img alt="typescript-logo" width="48" style="margin-right: 20px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" />
+  <img alt="nest-logo" width="48" style="margin-right: 12px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nestjs/nestjs-original-wordmark.svg" />
+  <img alt="prisma-logo" width="48" style="margin-right: 12px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg" />
+  <img alt="groq-logo" width="48" style="margin-right: 12px" src="https://github.com/user-attachments/assets/5f3b415e-65e7-49e8-b769-855c4605af4c" />
+  <img alt="nodejs-logo" width="48" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original-wordmark.svg" />
+  
+</div>
+
+---
+
+## 4. Installation
+### Prerequisites:
+Before running the project, ensure that **Node.js** is installed on your machine. If not, you can download it from the [official Node.js website](https://nodejs.org/en/) (LTS version recommended).
+
+To verify your Node.js installation, run:
+
+```console
+node -v
+npm -v
 ```
 
-## Compile and run the project
+Clone the repository to your local machine
 
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+```console
+git clone https://github.com/kaikyMoura/doc-sage-api.git
 ```
 
-## Run tests
+Navigate into the project directory
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+cd doc-sage-api
 ```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Install dependencies
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+npm install
+# or
+pnpm install
+# or
+yarn install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 6.  Environment Setup
 
-Check out a few resources that may come in handy when working with NestJS:
+### Environment Variables
+Create a .env file in the project root based on the example below:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```env
+# You can ask chatgpt if you don't know how to generate
+JWT_SECRET=your_jwt_secret_here
 
-## Support
+# PostgreSQL
+DATABASE_URL="postgresql://user:password@localhost:5432/docsage_db?schema=public"
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Groq
+GROQ_API_KEY=your_groq_api_key_here
 
-## Stay in touch
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Groq Setup (LLaMA 3)
+To use Groq's LLaMA 3 API for intelligent document structuring:
+- Go to [https://console.groq.com](https://console.groq.com)
+- Create a free account and generate an API key
+- Copy your key and paste it into the `.env` file under `GROQ_API_KEY`
 
-## License
+### PostgreSQL Database
+You need a PostgreSQL database to run the project. You can create one in several ways:
+- Install postgres sql locally: [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
+- Using `create db` [https://www.postgresql.org/docs/current/app-createdb.html](https://www.postgresql.org/docs/current/app-createdb.html)
+- Or via Docker + postgres [https://hub.docker.com/_/postgres](https://hub.docker.com/_/postgres)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Prisma Setup
+After configuring your database and .env, initialize and generate the Prisma client:
+
+```console
+# Run the Prisma migration via npm
+pnpm prisma migrate dev --name init
+
+# Generate the Prisma client
+pnpm prisma generate
+```
+
+You can use the Prisma CLI to inspect your DB or update schema as needed:
+
+```console
+pnpm prisma studio   # Open GUI to manage the DB
+```
+
+---
+
+## 7. Running the Application:
+Once the dependencies are installed, you can start the development server with:
+
+```console
+npm run dev
+# or
+pnpm run dev
+# or
+yarn dev
+```
+
+the application will be available on:
+
+```console
+http://localhost:5000
+```
+
+--- 
+
+## 8. Deployment
+Coming soon ...
+
+---
+
+## 9. Documentation
+The API is fully documented and designed for easy integration. Each new endpoint is automatically included in the documentation.
+
+### Pages Documentation
+Each module in the codebase contains a corresponding `.md` file that serves as a usage guide and endpoint showcase.
+
+### OpenApi (Swagger)
+The project exposes a Swagger UI for exploring and testing endpoints.
+
+Access it locally at:
+```bash
+http://localhost:5000/docs
+```
+
+---
+
+### 10. 📝 Terms of Use
+- **Non-commercial** project.
+- All rights related to user data and privacy are respected.
+- This project aims to serve as a learning and portfolio tool.
+
+#### Author 👨‍💻
+Kaiky Tupinambá - Fullstack developer
