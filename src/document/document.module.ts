@@ -1,10 +1,16 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { FileSchemasModule } from 'src/file-schemas/file-schemas.module';
+import { GoogleAIService } from 'src/google-ai/google-ai.service';
+import { ImageProcessorModule } from 'src/image-processor/image-processor.module';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ValidationModule } from 'src/validation/validation.module';
 import { DocumentController } from './document.controller';
 import { DocumentResolver } from './document.resolver';
 import { DocumentService } from './document.service';
+import { PDFService } from './utils/pdf.service';
 
 @Module({
   imports: [
@@ -17,8 +23,18 @@ import { DocumentService } from './document.service';
         },
       }),
     }),
+    HttpModule,
+    FileSchemasModule,
+    ValidationModule,
+    ImageProcessorModule,
   ],
-  providers: [DocumentResolver, DocumentService, PrismaService],
+  providers: [
+    DocumentResolver,
+    GoogleAIService,
+    PDFService,
+    DocumentService,
+    PrismaService,
+  ],
   controllers: [DocumentController],
 })
 export class DocumentModule {}

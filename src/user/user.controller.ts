@@ -11,12 +11,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/decorators/public.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserService } from './user.service';
 import { ChangePasswordDto } from 'src/auth/dtos/change-password-user.schema';
-import { CustomRequest } from 'src/types/custom-request';
+import { CustomRequest } from 'src/common/types/custom-request';
 
 @ApiTags('User')
 @Controller('users')

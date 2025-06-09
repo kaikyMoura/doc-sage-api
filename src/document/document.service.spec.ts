@@ -3,7 +3,7 @@ import { DocumentService } from './document.service';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Readable } from 'stream';
-import { DocumentResponseDto } from './dtos/document-response.dto';
+import { DocumentResponseDto } from './dtos/contract-response.dto';
 
 describe('DocumentService', () => {
   let service: DocumentService;

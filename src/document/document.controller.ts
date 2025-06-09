@@ -1,6 +1,9 @@
 import {
   BadRequestException,
+  Body,
   Controller,
+  MaxFileSizeValidator,
+  ParseFilePipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -37,11 +40,20 @@ export class DocumentController {
       },
     },
   })
-  processFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file.buffer);
+  async processFile(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 })],
+      }),
+    )
+    file: Express.Multer.File,
+    @Body('schemaName') schemaName: string,
+  ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
-    return this.documentService.processFile(file);
+    const text = await this.documentService.extractTextFromFIle(file);
+
+    return this.documentService.processFile(schemaName, text);
   }
 }
