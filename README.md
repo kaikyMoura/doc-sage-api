@@ -1,28 +1,28 @@
 <div align="center">
 
-# 📄 DocSage API
+# 📄 Dokra API
 
 
-**DocSage** is an intelligent backend API for analyzing and extracting structured information from documents (PDFs, images, and plain text), powered by LLMs and strict business validation rules.
+**Dokra** is an intelligent backend API for analyzing and extracting structured information from documents (PDFs, images, and plain text), powered by LLMs and strict business validation rules.
 
 </div>
 
 <div align="center">
   
-![GitHub top language](https://img.shields.io/github/languages/top/kaikyMoura/doc-sage-api)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ce1f958181d743b98107dbc70dfac5ed)](https://app.codacy.com/gh/kaikyMoura/doc-sage-api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-![Repository size](https://img.shields.io/github/repo-size/kaikyMoura/doc-sage-api)
-![Github last commit](https://img.shields.io/github/last-commit/kaikyMoura/doc-sage-api)
+![GitHub top language](https://img.shields.io/github/languages/top/kaikyMoura/dokra)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ce1f958181d743b98107dbc70dfac5ed)](https://app.codacy.com/gh/kaikyMoura/dokra/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+![Repository size](https://img.shields.io/github/repo-size/kaikyMoura/dokra)
+![Github last commit](https://img.shields.io/github/last-commit/kaikyMoura/dokra)
 ![License](https://img.shields.io/aur/license/LICENSE)
-![Languages count](https://img.shields.io/github/languages/count/kaikyMoura/doc-sage-api)
+![Languages count](https://img.shields.io/github/languages/count/kaikyMoura/dokra)
 
 </div>
 
 ## 1. About the Project
 
-This project serves as the API implementation for DocSage, an intelligent document analysis system designed to streamline workflows in contexts like notary offices, city halls, and public services requiring document validation and processing.
+This project serves as the API implementation for Dokra, an intelligent document analysis system designed to streamline workflows in contexts like notary offices, city halls, and public services requiring document validation and processing.
 
-Built with NestJS, Node.js, TypeScript, Tesseract.js, pdf-parse, Prisma, and Groq, the DocSage API enables efficient document processing by leveraging OCR and LLMs to extract and structure data from scanned images and PDF files.
+Built with NestJS, Node.js, TypeScript, Tesseract.js, pdf-parse, Prisma, and Groq, the Dokra API enables efficient document processing by leveraging OCR and LLMs to extract and structure data from scanned images and PDF files.
 
 Once text is extracted using Tesseract.js (for images) or pdf-parse (for PDFs), it is further processed and enriched by LLaMA 3 running on the Groq platform to identify and extract key fields (e.g., document type, issue date, names, numbers), providing structured and contextualized data for downstream usage.
 
@@ -75,13 +75,13 @@ npm -v
 Clone the repository to your local machine
 
 ```console
-git clone https://github.com/kaikyMoura/doc-sage-api.git
+git clone https://github.com/kaikyMoura/dokra.git
 ```
 
 Navigate into the project directory
 
 ```bash
-cd doc-sage-api
+cd dokra
 ```
 Install dependencies
 
@@ -105,7 +105,7 @@ Create a .env file in the project root based on the example below:
 JWT_SECRET=your_jwt_secret_here
 
 # PostgreSQL
-DATABASE_URL="postgresql://user:password@localhost:5432/docsage_db?schema=public"
+DATABASE_URL="postgresql://user:password@localhost:5432/dokra_db?schema=public"
 
 # Groq
 GROQ_API_KEY=your_groq_api_key_here
