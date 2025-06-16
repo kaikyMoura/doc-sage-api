@@ -107,16 +107,7 @@ JWT_SECRET=your_jwt_secret_here
 # PostgreSQL
 DATABASE_URL="postgresql://user:password@localhost:5432/dokra_db?schema=public"
 
-# Groq
-GROQ_API_KEY=your_groq_api_key_here
-
 ```
-
-### Groq Setup (LLaMA 3)
-To use Groq's LLaMA 3 API for intelligent document structuring:
-- Go to [https://console.groq.com](https://console.groq.com)
-- Create a free account and generate an API key
-- Copy your key and paste it into the `.env` file under `GROQ_API_KEY`
 
 ### PostgreSQL Database
 You need a PostgreSQL database to run the project. You can create one in several ways:
@@ -129,7 +120,7 @@ After configuring your database and .env, initialize and generate the Prisma cli
 
 ```console
 # Run the Prisma migration via npm
-pnpm prisma migrate dev --name init
+pnpm prisma migrate deploy
 
 # Generate the Prisma client
 pnpm prisma generate
@@ -147,11 +138,11 @@ pnpm prisma studio   # Open GUI to manage the DB
 Once the dependencies are installed, you can start the development server with:
 
 ```console
-npm run dev
+npm start:dev
 # or
-pnpm run dev
+pnpm start:dev
 # or
-yarn dev
+yarn start:dev
 ```
 
 the application will be available on:
