@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   BadRequestException,
   Body,
@@ -5,6 +6,7 @@ import {
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -42,21 +44,36 @@ export class DocumentController {
     },
   })
   async processFile(
+    @Res() res: Response,
     @UploadedFile(
       new ParseFilePipe({
         validators: [new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 })],
       }),
     )
     file: Express.Multer.File,
-    @Body('schema') schema: CreateFileSchemaDto,
-    @Body('formatTo') formatTo: string,
+    @Body('schema') schema?: CreateFileSchemaDto,
+    @Body('output') output: string = 'json',
   ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
     const text = await this.documentService.extractTextFromFIle(file);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return this.documentService.processFile(text, formatTo, schema);
+    const processedFileResponse = await this.documentService.processFile(
+      text,
+      output,
+      schema,
+    );
+
+    if (output === 'md') {
+      res.header('Content-Type', 'text/markdown; charset=utf-8');
+      // If the output format is markdown, convert the JSON object to a markdown list
+      return res
+        .status(200)
+        .send(this.documentService.jsonToMarkdownList(processedFileResponse));
+    }
+
+    // If the output format is not markdown, return the JSON object
+    return res.status(200).send(processedFileResponse);
   }
 }

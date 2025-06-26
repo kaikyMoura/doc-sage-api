@@ -28,11 +28,26 @@ export class DocumentService {
     private readonly schemasService: FileSchemasService,
   ) {}
 
+  /**
+   * Process a file (text or PDF) using the LLM and
+   * validate the response against the provided schema.
+   *
+   * If a schema name is provided, the schema will be retrieved
+   * from the database and the response will be validated against it.
+   * If no schema is provided, the response will not be validated.
+   *
+   * @param text The text to process.
+   * @param formatTo The format to convert the text to.
+   * @param schema The schema to use for validation, or its name to retrieve from the database.
+   * @returns The processed file in the specified format.
+   * @throws {BadRequestException} If the LLM response is invalid.
+   * @throws {NotFoundException} If the schema is not found in the database.
+   */
   async processFile(
     text: string,
     formatTo: string,
     schema?: CreateFileSchemaDto,
-  ): Promise<any> {
+  ): Promise<Record<string, string>> {
     this.logger.log('Initializing file processing...');
 
     let effectiveSchema: any = null;
@@ -93,7 +108,11 @@ export class DocumentService {
       }
 
       this.logger.debug('Validation successful.');
-      return validationResult.data;
+      return JSON.stringify(
+        validationResult.data,
+        null,
+        2,
+      ) as unknown as Record<string, string>;
     }
 
     this.logger.log('No schema was used, returning raw LLM response.');
@@ -110,11 +129,14 @@ export class DocumentService {
    * @private
    */
   async extractTextFromFIle(file: Express.Multer.File): Promise<string> {
+    this.logger.log('Extracting text from file...');
     const ext = extname(file.originalname).toLowerCase();
     console.log(file);
     if (ext === '.pdf') {
+      this.logger.log('File type is PDF, extracting text...');
       return await this.pdfService.extractTextFromPDF(file.path);
     } else if (['.png', '.jpg', '.jpeg'].includes(ext)) {
+      this.logger.log(`File type is ${ext}, extracting text...`);
       // // Preprocess the image
       // const processedBuffer =
       //   await this.imagePreprocessorService.processImage(file);
@@ -140,15 +162,66 @@ export class DocumentService {
       // try {
       // console.log(tempFilePath);
       const fileBuffer = readFileSync(file.path);
+      this.logger.log('Extracting text from image...');
       return await this.googleAIService.extractTextFromImage(fileBuffer);
       // } finally {
       //   fs.unlinkSync(tempFilePath); // Clean up temp file
       // }
     } else {
+      this.logger.error('Unsupported file type.');
       throw new UnsupportedMediaTypeException('Unsupported file type');
     }
   }
 
+  /**
+   * Recursively converts a JSON object to a markdown list.
+   *
+   * @param obj The object to convert
+   * @param indentLevel The indentation level to use for the list.
+   *                      Defaults to 0.
+   * @returns A markdown string representing the object as a list.
+   */
+  jsonToMarkdownList(obj: Record<string, unknown>, indentLevel = 0): string {
+    return Object.entries(obj)
+      .flatMap(([key, value]) => {
+        const indent = '  '.repeat(indentLevel);
+        const lines = [`${indent}- **${key}:** `];
+
+        if (
+          typeof value === 'object' &&
+          value !== null &&
+          !Array.isArray(value)
+        ) {
+          lines.push(
+            ...this.jsonToMarkdownList(
+              value as Record<string, unknown>,
+              indentLevel + 1,
+            ).split('\n'),
+          );
+        } else if (Array.isArray(value)) {
+          lines.push(...value.map((item) => `${indent}  - ${item}`));
+        } else {
+          lines.push(`${value as string}`);
+        }
+
+        return lines.join('\n');
+      })
+      .join('\n');
+  }
+
+  /**
+   * Builds a prompt for the LLM based on the given schema and text.
+   * If a schema is provided, the prompt will ask the LLM to extract the information
+   * from the text and return a JSON object that strictly follows the provided schema.
+   * If no schema is provided, the prompt will ask the LLM to convert the text into a
+   * well-structured JSON object, where the structure is logically inferred from the
+   * information present in the text.
+   *
+   * @param schema The schema to use for the prompt, if any.
+   * @param text The text to process.
+   * @param format The format of the expected output, defaults to 'json'.
+   * @returns The built prompt.
+   */
   private buildPrompt(
     schema: unknown,
     text: string,

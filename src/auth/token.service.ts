@@ -22,7 +22,7 @@ export class TokenService {
     expiresIn?: string,
   ): Promise<{ token: string; expiresIn: string }> {
     const token = await this.jwtService.signAsync(
-      { id: payload.sub, email: payload.email },
+      { sub: payload.sub, email: payload.email },
       { expiresIn: expiresIn ?? process.env.JWT_ACCESS_EXPIRES },
     );
 

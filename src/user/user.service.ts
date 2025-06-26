@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { ApiResponse } from 'src/common/types/ApiResponse';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
   private saltRounds = 10;
+  private readonly logger = new Logger(UserService.name);
 
   /**
    * Retrieves all User objects from the database.
@@ -88,7 +90,9 @@ export class UserService {
    *
    */
   async retrieveById(userId: string): Promise<Omit<BaseUserDto, 'password'>> {
+    this.logger.log('Retrieving user by id...');
     if (!userId) {
+      this.logger.error('User id is required');
       throw new BadRequestException('User id is required');
     }
 

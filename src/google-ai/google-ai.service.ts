@@ -56,10 +56,13 @@ export class GoogleAIService {
       temperature: 0.2, // Low temperature for more consistent and structured responses
     };
 
-    const model = this.genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
-      generationConfig,
-    });
+    const model = this.genAI.getGenerativeModel(
+      {
+        model: 'gemini-2.0-flash',
+        generationConfig,
+      },
+      { timeout: 60000 },
+    );
 
     this.logger.log('Sending prompt to the model...');
 
@@ -68,9 +71,10 @@ export class GoogleAIService {
       const response = result.response;
       const responseText = response.text();
 
-      console.log(responseText);
+      this.logger.log('Received response from the model: ' + responseText);
 
       if (!responseText) {
+        this.logger.error('The response text is empty.');
         throw new InternalServerErrorException('The response text is empty.');
       }
 
@@ -79,6 +83,7 @@ export class GoogleAIService {
     } catch (error) {
       this.logger.error(
         'Error invoking or processing the response from the Gemini API',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         error.stack,
       );
 
@@ -117,10 +122,8 @@ export class GoogleAIService {
         return '';
       }
     } catch (error: any) {
-      this.logger.error(
-        'Error extracting text from image:',
-        error.stack as unknown as string,
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      this.logger.error('Error extracting text from image:', error.stack);
       throw new InternalServerErrorException(
         'Internal server error while extracting text from image.',
       );
