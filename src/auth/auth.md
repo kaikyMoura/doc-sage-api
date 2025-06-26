@@ -2,7 +2,7 @@
 
 ### Module responsible for managing authentication, authorization, and secure session handling throughout the application.
 
-The `AuthModule` centralizes all logic related to verifying user identities and controlling access to protected resources. It ensures that only authenticated and authorized users can perform specific actions, based on their permissions.
+The `AuthModule` centralizes all logic related to verifying user identities and controlling access to protected resources. It ensures that only authenticated and authorized users can perform specific actions, based on their assigned roles and permissions.
 
 Key Responsibilities:
 - User Authentication: Validates user credentials and issues secure access tokens.
@@ -13,13 +13,13 @@ Key Responsibilities:
 
 ## Endpoints
 
-| Method | Endpoint                                  | Description                                                         | Auth Required |
-|:--------:|:-------------------------------------------|:---------------------------------------------------------------------|:----------------:|
-| POST   | `/auth/login`                         | Authenticate a user by its credentials            | ❌             |
-| POST   | `/auth/logout`                         | Finish the user's session            | ✅             |
-| POST   | `/auth/refresh`                         | Refresh the user's session            | ✅             |
-| POST   | `/auth/forgot-password`                         | Initiate password recovery process            | ❌             |
-| POST   | `/auth/reset-password`                         | Reset the user's password            | ✅             |
+| Method | Endpoint                                  | Description                                                         | Auth Required | Roles         |
+|:--------:|:-------------------------------------------|:---------------------------------------------------------------------|:----------------:|:----------------:|
+| POST   | `/auth/login`                         | Authenticate a user by its credentials            | ❌             | `ANY` |
+| POST   | `/auth/logout`                         | Finish the user's session            | ✅             | `ANY` |
+| POST   | `/auth/refresh`                         | Refresh the user's session            | ✅             | `ANY` |
+| POST   | `/auth/forgot-password`                         | Initiate password recovery process            | ❌             | `ANY` |
+| POST   | `/auth/reset-password`                         | Reset the user's password            | ✅             | `ANY` |
 
 ---
 

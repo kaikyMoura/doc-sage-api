@@ -7,23 +7,33 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiTags,
+  OmitType,
+} from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { Public } from 'src/common/decorators/public.decorator';
 import { LoginUserDto } from 'src/user/dtos/login-user.dto';
-import { UserService } from '../user/user.service';
+import { ResetPasswordDto } from 'src/user/dtos/reset-password.dto';
 import { AuthService } from './auth.service';
-import { ChangePasswordDto } from './dtos/change-password-user.schema';
+import { BaseOtpDto } from './dtos/base-otp.dto';
+import { TwilioService } from './utils/twilio.service';
+import { CreateUserDto } from 'src/user/dtos/create-user.dto';
+
+class RequestEmailDto extends OmitType(LoginUserDto, ['password'] as const) {}
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService,
+    private readonly twilioService: TwilioService,
   ) {}
 
-  @Post('login')
+  @Post('signin')
   @ApiBody({ type: LoginUserDto })
   @Public()
   @ApiOperation({ summary: 'Login' })
@@ -32,10 +42,8 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const user = await this.userService.retrieveUserByCredentials(body);
-
-    const tokens = await this.authService.createSession(
-      user,
+    const tokens = await this.authService.signIn(
+      body,
       req.headers['user-agent'] || 'unknown',
       req.ip,
     );
@@ -44,14 +52,26 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      path: '/auth/refresh',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({
+    return res.json({
       accessToken: tokens.accessToken,
       expiresIn: tokens.expiresIn,
     });
+  }
+
+  @Post('signup')
+  @ApiBody({ type: CreateUserDto })
+  @Public()
+  @ApiOperation({ summary: 'Create a new user' })
+  async create(@Body() userDto: CreateUserDto) {
+    const data = await this.authService.signup(userDto);
+    const user = data.data;
+    await this.authService.sendVerificationEmail(user.email);
+
+    return data;
   }
 
   @Post('refresh')
@@ -70,7 +90,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      path: '/auth/refresh',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -90,37 +110,70 @@ export class AuthController {
       await this.authService.revokeSession(refreshToken);
     }
 
-    res.clearCookie('refreshToken', { path: '/auth/refresh' });
+    res.clearCookie('refreshToken', { path: '/' });
     res.status(204).send();
   }
 
   @Post('forgot-password')
+  @ApiBody({ type: RequestEmailDto })
   @Public()
   @ApiOperation({ summary: 'Forgot password' })
   async forgotPassword(@Body('email') email: string) {
-    return await this.authService.forgotPassword(email);
+    return await this.authService.sendPasswordResetEmail(email);
+  }
+
+  @Post('send-verify-email')
+  @ApiBody({ type: RequestEmailDto })
+  @Public()
+  @ApiOperation({ summary: 'Verify email' })
+  async verifyEmail(@Body('email') email: string) {
+    return await this.authService.sendVerificationEmail(email);
+  }
+
+  @Post('verify-email')
+  @ApiBody({ type: RequestEmailDto })
+  @ApiOperation({ summary: 'Verify email' })
+  async verifyEmailToken(@Body('email') email: string) {
+    if (!email) {
+      throw new BadRequestException('Email is missing');
+    }
+
+    return await this.authService.verifyEmail(email);
   }
 
   @Post('reset-password')
-  @ApiBearerAuth()
-  @ApiBody({ type: ChangePasswordDto })
+  @Public()
+  @ApiBody({ type: ResetPasswordDto })
   @ApiOperation({ summary: 'Reset password' })
-  async resetPassword(@Body() resetPasswordDto: ChangePasswordDto) {
-    const { token } = resetPasswordDto;
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    const { token, newPassword } = resetPasswordDto;
 
-    if (!token) {
-      throw new BadRequestException('Token is missing');
+    if (!token || !newPassword) {
+      throw new BadRequestException('Missing required properties');
     }
 
-    const result = await this.authService.resetPassword(
-      token,
-      resetPasswordDto,
-    );
+    const result = await this.authService.resetPassword(token, newPassword);
 
     if (!result) {
       throw new BadRequestException('Password reset failed');
     }
 
     return { message: result };
+  }
+
+  @Public()
+  @ApiBody({
+    schema: { type: 'object', properties: { phone: { type: 'string' } } },
+  })
+  @Post('send-otp')
+  async sendOtp(@Body('phone') phone: string) {
+    return await this.twilioService.createVerification(phone);
+  }
+
+  @Public()
+  @ApiBody({ type: BaseOtpDto })
+  @Post('verify-otp')
+  async verifyOtp(@Body('phone') phone: string, @Body('otp') otp: string) {
+    return await this.twilioService.createVerificationCheck(phone, otp);
   }
 }

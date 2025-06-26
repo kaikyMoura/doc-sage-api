@@ -18,9 +18,11 @@ export class UserRepository {
    */
   async create(data: CreateUserDto): Promise<BaseUserDto> {
     const response = await this.prisma.user.create({
-      data: data,
+      data: {
+        ...data,
+        verifiedAt: undefined,
+      },
     });
-
     return {
       id: response.id,
       email: response.email,
@@ -123,6 +125,23 @@ export class UserRepository {
       where: { id },
       data: { password: password },
     });
+  }
+
+  /**
+   * Verifies a User in the database.
+   *
+   * @param {string} id - The unique identifier of the User to verify.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the User has been verified.
+   *
+   * @throws {Prisma.NotFoundError} - Thrown if the User with the given id does not exist in the database.
+   */
+  async verifyUser(id: string): Promise<User> {
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { verifiedAt: new Date() },
+    });
+    return user;
   }
 
   /**

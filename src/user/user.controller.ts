@@ -5,18 +5,15 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
-  Post,
   Put,
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/common/decorators/public.decorator';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CustomRequest } from 'src/common/types/custom-request';
+import { ChangePasswordDto } from 'src/user/dtos/change-password-user.schema';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserService } from './user.service';
-import { ChangePasswordDto } from 'src/auth/dtos/change-password-user.schema';
-import { CustomRequest } from 'src/common/types/custom-request';
 
 @ApiTags('User')
 @Controller('users')
@@ -70,18 +67,10 @@ export class UserController {
   @Get('me')
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Gets current user by email',
+    summary: 'Retrieve the currently authenticated user',
   })
   findMe(@Req() req: CustomRequest) {
-    return this.userService.retrieveByEmail(req.user.email);
-  }
-
-  @Post()
-  @ApiBody({ type: CreateUserDto })
-  @Public()
-  @ApiOperation({ summary: 'Create a new user' })
-  async create(@Body() userDto: CreateUserDto) {
-    return await this.userService.create(userDto);
+    return this.userService.retrieveById(req.user.id);
   }
 
   @Put(':id')

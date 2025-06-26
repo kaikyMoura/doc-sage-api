@@ -9,18 +9,20 @@ import {
 
 export class CreateFileSchemaDto {
   @ApiProperty({ example: 'ServiceContract' })
-  @IsString()
+  @IsString({ message: 'Schema name must be a text' })
   @IsNotEmpty()
-  @MinLength(3)
-  schemaName: string;
+  @MinLength(3, {
+    message: 'Schema name must be at least 3 characters long',
+  })
+  schemaName?: string;
 
   @ApiProperty({ example: 'Service Contract' })
-  @IsString()
+  @IsString({ message: 'Description must be a text' })
   @IsOptional()
   description?: string;
 
   @ApiProperty({ example: '{}' })
-  @IsObject()
+  @IsObject({ message: 'JSON schema must be an object' })
   @IsNotEmpty()
   jsonSchema: Record<string, any>;
 }

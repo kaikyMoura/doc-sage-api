@@ -18,6 +18,13 @@ export class FileSchemasService {
     private schemaModel: Model<SchemaDefinitionDocument>,
   ) {}
 
+  /**
+   * Creates a new schema in the database.
+   *
+   * @param createSchemaDto The data transfer object containing the schema details.
+   * @returns A promise that resolves to the newly created `SchemaDefinition`.
+   * @throws ConflictException If a schema with the same name already exists.
+   */
   async create(
     createSchemaDto: CreateFileSchemaDto,
   ): Promise<SchemaDefinition> {
@@ -35,15 +42,36 @@ export class FileSchemasService {
     return newSchema.save();
   }
 
+  /**
+   * Finds a schema by its name.
+   *
+   * @param name The name of the schema to find.
+   * @returns A promise that resolves to a `SchemaDefinitionDocument` if a schema
+   *          with the given name exists, or `null` if no such schema is found.
+   */
   async findByName(name: string): Promise<SchemaDefinitionDocument | null> {
-    const schema = await this.schemaModel.findOne({ schemaName: name }).exec();
-    return schema;
+    return await this.schemaModel.findOne({ schemaName: name }).exec();
   }
 
+  /**
+   * Finds all existing schemas in the database.
+   *
+   * @returns A promise that resolves to an array of `SchemaDefinition` objects.
+   */
   async findAll(): Promise<SchemaDefinition[]> {
     return this.schemaModel.find().exec();
   }
 
+  /**
+   * Delete a schema by name.
+   *
+   * @param name The name of the schema to delete.
+   *
+   * @returns A promise that resolves to an object with a single property
+   *          `deleted` set to `true` if the schema was found and deleted,
+   *          or throws a `NotFoundException` if no schema with the given
+   *          name was found.
+   */
   async deleteByName(name: string): Promise<{ deleted: boolean }> {
     const result = await this.schemaModel
       .deleteOne({ schemaName: name })

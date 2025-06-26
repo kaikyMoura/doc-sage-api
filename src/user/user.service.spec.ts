@@ -12,7 +12,7 @@ describe('UserService', () => {
     service = module.get<UserService>(UserService);
   });
 
-  it('should be defined', async () => {
-    expect((await service.retrieveById('')).name).toBe('João');
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 });

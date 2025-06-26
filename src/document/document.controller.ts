@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DocumentService } from './document.service';
+import { CreateFileSchemaDto } from 'src/file-schemas/dtos/create-file-schema.dto';
 
 @ApiTags('Document')
 @Controller('document')
@@ -47,13 +48,15 @@ export class DocumentController {
       }),
     )
     file: Express.Multer.File,
-    @Body('schemaName') schemaName: string,
+    @Body('schema') schema: CreateFileSchemaDto,
+    @Body('formatTo') formatTo: string,
   ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
     const text = await this.documentService.extractTextFromFIle(file);
 
-    return this.documentService.processFile(schemaName, text);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return this.documentService.processFile(text, formatTo, schema);
   }
 }

@@ -5,16 +5,16 @@ import {
   NotFoundException,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
+import { readFileSync } from 'fs';
 import 'multer';
 import { extname } from 'path';
+import { CreateFileSchemaDto } from 'src/file-schemas/dtos/create-file-schema.dto';
+import { FileSchemasService } from 'src/file-schemas/file-schemas.service';
 import { ImageProcessorService } from 'src/image-processor/image-processor.service';
 import { ValidationJson } from 'src/validation/schemas/validation-json.schema';
 import { ValidationService } from 'src/validation/validation.service';
-import { SafeParseSuccess } from 'zod';
 import { GoogleAIService } from '../google-ai/google-ai.service';
 import { PDFService } from './utils/pdf.service';
-import { FileSchemasService } from 'src/file-schemas/file-schemas.service';
-import { readFileSync } from 'fs';
 
 @Injectable()
 export class DocumentService {
@@ -27,49 +27,77 @@ export class DocumentService {
     private readonly googleAIService: GoogleAIService,
     private readonly schemasService: FileSchemasService,
   ) {}
-  /**
-   * Processes a document represented as a string, using the given document type
-   * and an optional custom prompt. The document type is used to determine the
-   * schema of the output, and the custom prompt is used to generate the prompt
-   * given to the LLM. The LLM response is parsed according to the schema, and if
-   * the parsing is successful, the parsed result is returned.
-   *
-   * @throws {BadRequestException} if the document type is unknown
-   * @throws {BadRequestException} if the LLM response is invalid
-   * @throws {BadRequestException} if the parsed result does not match the schema
-   * @returns {Promise<z.infer<(typeof documentTypes)[T]>>} the parsed result
-   */
+
   async processFile(
-    schemaName: string,
     text: string,
-  ): Promise<SafeParseSuccess<any>> {
-    const schema = await this.schemasService.findByName(schemaName);
-    if (!schema) {
-      throw new NotFoundException(`Schema ${schemaName} not found`);
+    formatTo: string,
+    schema?: CreateFileSchemaDto,
+  ): Promise<any> {
+    this.logger.log('Initializing file processing...');
+
+    let effectiveSchema: any = null;
+
+    if (schema && typeof schema === 'object' && schema.schemaName) {
+      this.logger.log(
+        `Schema name '${schema.schemaName}' provided. Retrieving from database...`,
+      );
+      const retrievedSchema = await this.schemasService.findByName(
+        schema.schemaName,
+      );
+
+      if (!retrievedSchema) {
+        throw new NotFoundException(
+          `Schema with name '${schema.schemaName}' not found in the database.`,
+        );
+      }
+
+      effectiveSchema = retrievedSchema.jsonSchema;
+      this.logger.log(
+        `Schema '${schema.schemaName}' found and will be used for processing.`,
+      );
+    } else if (schema && typeof schema === 'object') {
+      this.logger.log(
+        'A direct schema object was provided. Using it for processing.',
+      );
+      effectiveSchema = schema;
+    } else {
+      this.logger.log('No schema provided. Processing in inference mode.');
     }
 
-    const prompt = this.buildPrompt(schema.jsonSchema, text);
-
-    console.log(prompt);
+    const prompt = this.buildPrompt(effectiveSchema, text, formatTo);
+    this.logger.log('Prompt successfully built.');
 
     const llmResponse = await this.googleAIService.askAndParseResponse(prompt);
+    this.logger.log('Received response from LLM.');
 
-    const validationResult = this.validationService.validate(
-      schema.jsonSchema as ValidationJson,
-      llmResponse,
-    );
+    if (effectiveSchema) {
+      this.logger.log(
+        'Validating LLM response against the effective schema...',
+      );
+      const validationResult = this.validationService.validate(
+        effectiveSchema as ValidationJson,
+        llmResponse,
+      );
 
-    if (!validationResult.success) {
-      throw new BadRequestException({
-        message:
-          'The LLM response is invalid. Please check the validation errors.',
-        validationErrors: validationResult.error.flatten().fieldErrors,
-        extractedData: llmResponse,
-      });
+      if (!validationResult.success) {
+        this.logger.error(
+          'LLM response validation failed.',
+          validationResult.error.flatten(),
+        );
+        throw new BadRequestException({
+          message:
+            'The LLM response is invalid. Please check the validation errors.',
+          validationErrors: validationResult.error.flatten().fieldErrors,
+          extractedData: llmResponse,
+        });
+      }
+
+      this.logger.debug('Validation successful.');
+      return validationResult.data;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return validationResult.data;
+    this.logger.log('No schema was used, returning raw LLM response.');
+    return llmResponse;
   }
 
   /**
@@ -121,19 +149,39 @@ export class DocumentService {
     }
   }
 
-  private buildPrompt(schema: any, text: string): string {
-    const schemaString = JSON.stringify(schema, null, 2);
-    return `
-      Given the text below, extract and return a JSON object with the following exact fields.
-      Do not include any additional fields, and use the property names and structure exactly as shown.
-      If any optional data is not present in the text, return the field with null or an empty string.
-      Return a valid JSON object only. Do not add explanations or markdown formatting.
+  private buildPrompt(
+    schema: unknown,
+    text: string,
+    format: string = 'json',
+  ): string {
+    this.logger.log('Building prompt...');
+    const hasSchema = schema && Object.keys(schema).length > 0;
 
-      Field schema:
+    if (hasSchema) {
+      const schemaString = JSON.stringify(schema, null, 2);
+      this.logger.log('Builing prompt with schema...');
+      return `
+      Given the text below, extract the information and return a ${format.toUpperCase()} object that strictly follows the provided schema.
+      Do not include any additional fields. Use the property names and structure exactly as shown.
+      If a field's data is not present in the text, use null for its value.
+      Return only the valid ${format.toUpperCase()} object, without any explanations or markdown formatting.
+
+      Schema:
       ${schemaString}
 
       Document:
       """${text}"""
     `;
+    } else {
+      this.logger.log('Builing prompt without a schema...');
+      return `
+      Analyze the text below and convert it into a well-structured ${format.toUpperCase()} object.
+      The structure of the ${format.toUpperCase()} object should be logically inferred from the information present in the text.
+      The output must be only the valid ${format.toUpperCase()} object, without adding any explanations, comments, or markdown formatting.
+
+      Text:
+      """${text}"""
+    `;
+    }
   }
 }

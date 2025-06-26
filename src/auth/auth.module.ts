@@ -1,29 +1,25 @@
 import { Module } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { MailModule } from 'src/mail/mail.module';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserRepository } from 'src/user/user.repository';
-import { UserService } from 'src/user/user.service';
+import { UserSessionModule } from 'src/user-session/user-session.module';
+import { UserModule } from 'src/user/user.module';
 import { AuthController } from './auth.controller';
-import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
-import { UserSessionRepository } from 'src/user-session/user-session.repository';
-import { EmailService } from 'src/email/email.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { TokenService } from './token.service';
+import { TwilioService } from './utils/twilio.service';
 
 @Module({
+  imports: [PassportModule, MailModule, UserSessionModule, UserModule],
   controllers: [AuthController],
   providers: [
     AuthController,
     AuthService,
-    EmailService,
-    JwtService,
-    UserService,
-    UserSessionRepository,
-    UserRepository,
+    TwilioService,
+    TokenService,
     PrismaService,
-    {
-      provide: 'APP_GUARD',
-      useClass: AuthGuard,
-    },
+    JwtStrategy,
   ],
   exports: [AuthService, AuthController],
 })
