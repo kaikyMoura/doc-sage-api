@@ -22,9 +22,9 @@
 
 This project serves as the API implementation for Dokra, an intelligent document analysis system designed to streamline workflows in contexts like notary offices, city halls, and public services requiring document validation and processing.
 
-Built with NestJS, Node.js, TypeScript, Tesseract.js, pdf-parse, Prisma, and Groq, the Dokra API enables efficient document processing by leveraging OCR and LLMs to extract and structure data from scanned images and PDF files.
+Built with NestJS, Node.js, TypeScript, Google Vision, pdf-parse, Prisma, and Gemini LLM, the Dokra API enables efficient document processing by leveraging OCR and LLMs to extract and structure data from scanned images and PDF files.
 
-Once text is extracted using Tesseract.js (for images) or pdf-parse (for PDFs), it is further processed and enriched by LLaMA 3 running on the Groq platform to identify and extract key fields (e.g., document type, issue date, names, numbers), providing structured and contextualized data for downstream usage.
+Once text is extracted using Google Vision (for images) or pdf-parse (for PDFs), it is then processed by Gemini, which identifies and extracts key fields — such as document type, issue date, names, and reference numbers — delivering structured and contextualized data ready for downstream applications.
 
 ---
 
@@ -33,10 +33,10 @@ Once text is extracted using Tesseract.js (for images) or pdf-parse (for PDFs), 
 - 🔐 User Authentication (JWT-based)
 - 📄 Document Upload (images and PDFs)
 - 🧠 Text Extraction using:
-  - `Tesseract.js` for image-based OCR
+  - `Google Vision` for image-based OCR
   - `pdf-parse` for PDF document parsing
 
-- 🤖 LLM Integration via `Groq` + `LLaMA 3` to:
+- 🤖 LLM Integration via `Gemini LLM` to:
   - Identify relevant information from raw text
   - Return structured and categorized document data 
 
@@ -54,7 +54,6 @@ Once text is extracted using Tesseract.js (for images) or pdf-parse (for PDFs), 
   <img alt="typescript-logo" width="48" style="margin-right: 20px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" />
   <img alt="nest-logo" width="48" style="margin-right: 12px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nestjs/nestjs-original-wordmark.svg" />
   <img alt="prisma-logo" width="48" style="margin-right: 12px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg" />
-  <img alt="groq-logo" width="48" style="margin-right: 12px" src="https://github.com/user-attachments/assets/5f3b415e-65e7-49e8-b769-855c4605af4c" />
   <img alt="nodejs-logo" width="48" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original-wordmark.svg" />
   
 </div>
