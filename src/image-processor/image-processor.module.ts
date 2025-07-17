@@ -1,5 +1,5 @@
-// src/image-processor/image-processor.module.ts
-import { HttpModule } from '@nestjs/axios';
+// ../image-processor/image-processor.module.ts
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ImageProcessorService } from './image-processor.service';
@@ -13,7 +13,7 @@ import { ImageProcessorService } from './image-processor.service';
       maxRedirects: 5,
     }),
   ],
-  providers: [ImageProcessorService],
+  providers: [ImageProcessorService, HttpService],
   exports: [ImageProcessorService],
 })
 export class ImageProcessorModule {}

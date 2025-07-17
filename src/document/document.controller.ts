@@ -19,7 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DocumentService } from './document.service';
-import { CreateFileSchemaDto } from 'src/file-schemas/dtos/create-file-schema.dto';
+import { CreateFileSchemaDto } from '../file-schemas/dtos/create-file-schema.dto';
 
 @ApiTags('Document')
 @Controller('document')

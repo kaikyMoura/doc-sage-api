@@ -8,11 +8,11 @@ import {
 import { readFileSync } from 'fs';
 import 'multer';
 import { extname } from 'path';
-import { CreateFileSchemaDto } from 'src/file-schemas/dtos/create-file-schema.dto';
-import { FileSchemasService } from 'src/file-schemas/file-schemas.service';
-import { ImageProcessorService } from 'src/image-processor/image-processor.service';
-import { ValidationJson } from 'src/validation/schemas/validation-json.schema';
-import { ValidationService } from 'src/validation/validation.service';
+import { CreateFileSchemaDto } from '../file-schemas/dtos/create-file-schema.dto';
+import { FileSchemasService } from '../file-schemas/file-schemas.service';
+import { ImageProcessorService } from '../image-processor/image-processor.service';
+import { ValidationJson } from '../validation/schemas/validation-json.schema';
+import { ValidationService } from '../validation/validation.service';
 import { GoogleAIService } from '../google-ai/google-ai.service';
 import { PDFService } from './utils/pdf.service';
 

@@ -10,8 +10,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CustomRequest } from 'src/common/types/custom-request';
-import { ChangePasswordDto } from 'src/user/dtos/change-password-user.schema';
+import { CustomRequest } from '../common/types/custom-request';
+import { ChangePasswordDto } from '../user/dtos/change-password-user.schema';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserService } from './user.service';
 

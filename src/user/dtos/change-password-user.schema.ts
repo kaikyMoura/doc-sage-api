@@ -6,7 +6,7 @@ import {
   Matches,
   MinLength,
 } from 'class-validator';
-import { Match } from 'src/config/validators/match.validator';
+import { Match } from '../../config/validators/match.validator';
 
 export class ChangePasswordDto {
   @ApiProperty({ example: 'securePassword123' })

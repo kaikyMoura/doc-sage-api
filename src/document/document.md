@@ -4,7 +4,7 @@
 
 ## Exemples payload
 
-// src/document/schemas/contract.schema.ts
+// ../document/schemas/contract.schema.ts
 ```json
 {
 	"parts_involved": {

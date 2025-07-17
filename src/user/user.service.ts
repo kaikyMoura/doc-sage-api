@@ -7,13 +7,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import bcrypt, { compare, hash } from 'bcryptjs';
-import { ChangePasswordDto } from 'src/user/dtos/change-password-user.schema';
+import { ChangePasswordDto } from '../user/dtos/change-password-user.schema';
 import { BaseUserDto } from './dtos/base-user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { LoginUserDto } from './dtos/login-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserRepository } from './user.repository';
-import { ApiResponse } from 'src/common/types/ApiResponse';
+import { ApiResponse } from '../common/types/ApiResponse';
 
 @Injectable()
 export class UserService {
