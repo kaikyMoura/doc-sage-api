@@ -182,8 +182,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"app/generated/prisma/client\"\n}\n\ndatasource db {\n  provider = \"postgres\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id       String  @id @default(uuid())\n  name     String\n  email    String  @unique\n  password String\n  phone    String  @unique\n  photo    String?\n\n  verifiedAt DateTime? @map(\"verified_at\")\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n\n  sessions UserSession[] @relation(\"UserSessions\")\n}\n\nmodel UserSession {\n  id           String   @id @default(uuid())\n  userId       String\n  refreshToken String\n  userAgent    String?\n  ipAddress    String?\n  createdAt    DateTime @default(now())\n  expiresAt    DateTime\n  user         User     @relation(\"UserSessions\", fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n}\n",
-  "inlineSchemaHash": "f2039f08f25f33bf2f084d5f9a99a6de7a4b6eb1745aeab84ba4ca409f2496e8",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"app/generated/prisma/client\"\n}\n\ndatasource db {\n  provider  = \"postgres\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\nmodel User {\n  id       String  @id @default(uuid())\n  name     String\n  email    String  @unique\n  password String\n  phone    String  @unique\n  photo    String?\n\n  verifiedAt DateTime? @map(\"verified_at\")\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n\n  sessions UserSession[] @relation(\"UserSessions\")\n}\n\nmodel UserSession {\n  id           String   @id @default(uuid())\n  userId       String\n  refreshToken String\n  userAgent    String?\n  ipAddress    String?\n  createdAt    DateTime @default(now())\n  expiresAt    DateTime\n  user         User     @relation(\"UserSessions\", fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n}\n",
+  "inlineSchemaHash": "20e6b509bc086f31bc244c18c21146839cb3c33a5eebce96a622bc543f0e2056",
   "copyEngine": true
 }
 config.dirname = '/'
